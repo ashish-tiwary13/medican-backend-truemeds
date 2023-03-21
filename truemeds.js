@@ -28,7 +28,7 @@ if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
       await page.goto(`https://www.truemeds.in/search/${search}`);
      
       firstname = await page.evaluate(() => {
-        headings_elements = document.querySelectorAll(".sc-jONnTn .medName");
+        headings_elements = document.querySelectorAll(".sc-dacFzL .medName");
         headings_array = Array.from(headings_elements);
         return headings_array.map(heading => heading.textContent);
       });
@@ -46,7 +46,7 @@ if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
       });
 
       linklist = await page.evaluate(() => {
-          const imagelist = Array.from(document.querySelectorAll(".sc-aemoO.fmCFEG")).map(x => {
+          const imagelist = Array.from(document.querySelectorAll(".sc-kIeTtH .sc-dtwoBo")).map(x => {
                 const img = x.querySelector("img");
                 if (!img) return ""; // or return a default image URL
                 return img.src;
@@ -59,9 +59,11 @@ if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
       
       // "https://assets.truemeds.in/Images/ProductImage/TM-GEEL1-001118/VOLINI-1.16--GEL-75-GM_1.webp?tr=cm-pad_resize,bg-FFFFFF,lo-true,w-80"
       // "https://www.truemeds.in/medicine/volini-116-gel-75-gm-TM-GEEL1-001118"
+      // "https://www.truemeds.in/otc/volini-116-gel-75-gm-tm-geel1-001118"
 
       const fmList = [];
       const smList = [];
+      const ssList = [];
       const tmList = [];
       const modifiedList = [];
       for(let i=0;i<linklist.length;i++){
@@ -72,13 +74,14 @@ if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
         }
         if(fmList[i]!==""){
           smList[i]=fmList[i].slice(0,fmList[i].indexOf("/"));
+          ssList[i]=smList[i].toLowerCase();
           tmList[i]=fmList[i].slice(fmList[i].indexOf("/")+1);
           tmList[i]=tmList[i].toLowerCase();
           tmList[i]=tmList[i].replace(".","");
           tmList[i]=tmList[i].replace("--","-");
-          modifiedList[i] = `https://www.truemeds.in/medicine/${tmList[i]}-${smList[i]}`;
+          modifiedList[i] = `https://www.truemeds.in/otc/${tmList[i]}-${ssList[i]}`;
         }else{
-          smList[i]="";
+          ssList[i]="";
           tmList[i]="";
           modifiedList[i]="";
         }
