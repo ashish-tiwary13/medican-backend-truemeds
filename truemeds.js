@@ -23,10 +23,13 @@ if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
 
     try {
       let browser = await puppeteer.launch(options);
-
       let page = await browser.newPage();
-      await page.goto(`https://www.truemeds.in/search/${search}`);
-     
+      await page.goto(`https://www.truemeds.in/search/`);
+      await page.waitForSelector(".search-input");
+      await page.type(".search-input", search);
+      await page.keyboard.press("Enter");
+      await page.waitForSelector(".sc-dacFzL .medName");
+      
       firstname = await page.evaluate(() => {
         headings_elements = document.querySelectorAll(".sc-dacFzL .medName");
         headings_array = Array.from(headings_elements);
